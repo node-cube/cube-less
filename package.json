@@ -2,7 +2,7 @@
   "author": "fish <zhengxinlin@gmail.com> (https://github.com/fishbar)",
   "name": "cube-less",
   "description": "the less processor for cube",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "homepage": "https://github.com/node-cube/cube-less",
   "repository": {
     "type": "git",

@@ -31,7 +31,9 @@ LessProcessor.prototype = {
         source: code,
         code: codeRes
       };
-
+      if (self.cube.fixupResPath) {
+        res.code = self.cube.fixupResPath(path.dirname(options.qpath), res.code);
+      }
       if (options.moduleWrap) {
         res.wraped = self.cube.wrapStyle(options.qpath, codeRes);
       }
