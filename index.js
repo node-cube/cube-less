@@ -13,10 +13,11 @@ LessProcessor.info = {
 LessProcessor.prototype = {
   process: function (file, options, callback) {
     var root = options.root;
-    var code = fs.readFileSync(path.join(root, file)).toString();
+    var absFile = path.join(root, file);
+    var code = fs.readFileSync(absFile).toString();
     var codeRes;
     var lessParser = new(less.Parser)({
-      paths: [root]
+      paths: [path.dirname(absFile), root]
     });
     var self = this;
     lessParser.parse(code, function (err, tree) {
