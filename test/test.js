@@ -1,21 +1,29 @@
 var TestMod = require('../index');
 var expect = require('expect.js');
+var path = require('path');
+var fs = require('fs');
 
 describe('cube-less', function () {
   it('expect info', function () {
-    expect(TestMod.info.type).to.be('style');
-    expect(TestMod.info.ext).to.be('.less');
+    expect(TestMod.type).to.be('style');
+    expect(TestMod.ext).to.be('.less');
   });
   it('expect processor less file fine', function (done) {
-    var options = {
-      release: false,
-      moduleWrap: true,
-      compress: true,
-      qpath: '/test.less',
-      root: __dirname
+    var file = '/test.less';
+    var code = fs.readFileSync(path.join(__dirname, file)).toString();
+    var data = {
+      code: code,
+      source: code,
+      queryPath: file,
+      realPath: file
     };
     var cube = {
-      config: options,
+      config: {
+        release: false,
+        moduleWrap: true,
+        compress: true,
+        root: __dirname
+      },
       wrapStyle: function (qpath, code) {
         return 'Cube("' + qpath + '", [], function(m){m.exports=' + JSON.stringify(code) + ';return m.exports});';
       }
@@ -28,34 +36,41 @@ describe('cube-less', function () {
       done();
     }
     var processor = new TestMod(cube);
-    processor.process('/test.less', options, function (err, res) {
+    processor.process(data, function (err, res) {
       expect(err).to.be(null);
-      expect(res).have.keys(['source', 'code', 'wraped']);
+      expect(res).have.keys(['source', 'code']);
       expect(res.source).match(/\.test_less \{\s+a\s*\{/);
       expect(res.code).to.match(/\.test_less a\s*\{/);
-      eval(res.wraped);
+      var wraped = cube.wrapStyle(file, res.code);
+      eval(wraped);
     });
   });
 
   it('expect processor error less file, return error', function (done) {
-    require = function () {
+    var require = function () {
       return {};
     };
-    var options = {
-      release: false,
-      moduleWrap: true,
-      compress: true,
-      qpath: '/test_err.less',
-      root: __dirname
+    var file = '/test_err.less';
+    var code = fs.readFileSync(path.join(__dirname, file)).toString();
+    var data = {
+      code: code,
+      source: code,
+      queryPath: file,
+      realPath: file
     };
     var cube = {
-      config: options,
+      config: {
+        release: false,
+        moduleWrap: true,
+        compress: true,
+        root: __dirname
+      },
       wrapStyle: function (qpath, code) {
         return 'Cube("' + qpath + '", [], function(m){m.exports=' + JSON.stringify(code) + ';return m.exports});';
       }
     };
     var processor = new TestMod(cube);
-    processor.process('/test_err.less', options, function (err, res) {
+    processor.process(data, function (err, res) {
       expect(err).to.be.ok();
       done();
     });
