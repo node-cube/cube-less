@@ -1,3 +1,9 @@
+/*!
+ * cube-less: index.js
+ * Authors  : 剪巽 <jianxun.zxl@taobao.com> (https://github.com/fishbar)
+ * Create   : 2016-06-02 10:22:39
+ * CopyRight 2016 (c) Alibaba Group
+ */
 var path = require('path');
 var less = require('less');
 
