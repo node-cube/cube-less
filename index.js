@@ -1,8 +1,9 @@
 var path = require('path');
 var less = require('less');
 
-function LessProcessor(cube) {
+function LessProcessor(cube, config) {
   this.cube = cube;
+  this.config = config || {};
 }
 LessProcessor.type = 'style';
 LessProcessor.ext = '.less';
@@ -15,10 +16,10 @@ LessProcessor.prototype.process = function (data, callback) {
   var self = this;
   less.render(
     code,
-    {
+    Object.assign({}, {
       paths: [path.dirname(file), root],
-      compress: data.compress || config.compress
-    },
+      compress: data.compress || config.compress,
+    }, this.config),
     function (err, result) {
       if (err) {
         err.code = 'Less_Parse_Error';
