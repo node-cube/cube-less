@@ -5,8 +5,9 @@
 ## write a processor
 
 ```js
-function Processor(cube) {
+function Processor(cube, config) {
   this.cube = cube;
+  this.config = config || {}
 }
 
 Processor.info = {
