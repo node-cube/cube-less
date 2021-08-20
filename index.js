@@ -17,7 +17,7 @@ LessProcessor.prototype.process = function (data, callback) {
   less.render(
     code,
     Object.assign({}, {
-      paths: [path.dirname(file), root],
+      paths: [path.dirname(file), config.root],
       compress: data.compress || config.compress,
     }, this.config),
     function (err, result) {
