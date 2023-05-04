@@ -16,10 +16,13 @@ LessProcessor.prototype.process = function (data, callback) {
   var self = this;
   less.render(
     code,
-    Object.assign({}, {
+    {
+      filename: data.queryPath,
+      strictMath: true,
       paths: [path.dirname(file), config.root],
-      compress: data.compress || config.compress,
-    }, this.config),
+      modifyVars: {}, // less中的变量表
+      compress: data.compress || config.compress
+    },
     function (err, result) {
       if (err) {
         err.code = 'Less_Parse_Error';
