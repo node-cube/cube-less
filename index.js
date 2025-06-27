@@ -19,7 +19,7 @@ LessProcessor.prototype.process = function (data, callback) {
     {
       filename: data.queryPath,
       strictMath: true,
-      paths: [path.dirname(file), config.root],
+      paths: [path.dirname(file), config.root, path.join(config.root, 'node_modules')],
       modifyVars: {}, // less中的变量表
       compress: data.compress || config.compress
     },
