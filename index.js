@@ -8,38 +8,31 @@ class CustomFileManager extends less.FileManager {
     this.data = data;
   }
   loadFile(filename, currentDirectory, options, environment) {
-    // 判断是否为绝对路径或相对路径
-    if (path.isAbsolute(filename) || filename.startsWith('.') || filename.startsWith('..')) {
-      return super.loadFile(filename, currentDirectory, options, environment);
-    }
-    // 判断是否为库名（@开头或字母开头）
-    if (/^@?\w+/.test(filename)) {
-      // 走 cube 的 getFile 逻辑
-      if (this.cube && typeof this.cube.readFile === 'function') {
-        return new Promise((resolve, reject) => {
-          this.cube.resolveModulePath(this.data, filename, (err, { path, code } = {}) => {
-            if (err || code === 1) {
-              // 错误的话还是走默认 less 的逻辑
-              super.loadFile(filename, currentDirectory, options, environment).then(resolve, reject);
-            } else {
-              const data = {
-                queryPath: path,
-                realPath: filename
-              };
-              this.cube.readFile(data, (err, fileData) => {
-                if (err || !fileData || !fileData.code) {
-                  super.loadFile(filename, currentDirectory, options, environment).then(resolve, reject);
-                } else {
-                  resolve({
-                    filename: fileData.realPath || filename,
-                    contents: fileData.code
-                  });
-                }
-              });
-            }
-          });
+    if (this.cube && typeof this.cube.readFile === 'function' && typeof this.cube.resolveModulePath === 'function') {
+      return new Promise((resolve, reject) => {
+        this.cube.resolveModulePath(this.data, filename, (err, { path, code } = {}) => {
+          if (err || code === 1) {
+            // 错误的话还是走默认 less 的逻辑
+            super.loadFile(filename, currentDirectory, options, environment).then(resolve, reject);
+          } else {
+            const data = {
+              queryPath: path,
+              realPath: filename
+            };
+            this.cube.readFile(data, (err, fileData) => {
+              if (err || !fileData || !fileData.code) {
+                super.loadFile(filename, currentDirectory, options, environment).then(resolve, reject);
+              } else {
+                this.data = data;
+                resolve({
+                  filename: fileData.realPath || filename,
+                  contents: fileData.code
+                });
+              }
+            });
+          }
         });
-      }
+      });
     }
     return super.loadFile(filename, currentDirectory, options, environment);
   }
